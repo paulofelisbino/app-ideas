@@ -8,3 +8,9 @@ export const SimpleText = styled.Text`
   padding: 10px;
   font-size: 40px;
 `;
+
+export const ErrorText = styled.Text`
+  padding: 10px;
+  /* font-size: 40px; */
+  color: red;
+`;

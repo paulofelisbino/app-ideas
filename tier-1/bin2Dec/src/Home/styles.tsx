@@ -11,6 +11,5 @@ export const SimpleText = styled.Text`
 
 export const ErrorText = styled.Text`
   padding: 10px;
-  /* font-size: 40px; */
-  color: red;
+  color: #ff5555;
 `;

@@ -7,58 +7,60 @@ const Home = (): JSX.Element => {
   const [decimalText, setDecimalText] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  function handleInputChange(input: string) {
+  const handleInputChange = (input: string) => {
     setBinaryText(input);
     setErrorMessage('');
     setDecimalText('');
 
-    if (input.length === 0) {
-      return;
-    }
-
-    if (!textIsValid(input)) {
-      setErrorMessage('Only 0 or 1 allowed!');
+    if (!inputIsValid(input)) {
       return;
     }
 
     const decimal = bin2Dec(input);
     setDecimalText(decimal.toString());
-  }
+  };
 
-  function bin2Dec(binary: string) {
-    const reverseInput = binary.split('').map(Number).reverse();
-
-    let decimal = 0;
-    for (let index = 0; index < reverseInput.length; index++) {
-      const number = reverseInput[index];
-      decimal += number * Math.pow(2, index);
+  const inputIsValid = (inputValue: string) => {
+    if (inputValue.length === 0) {
+      return false;
     }
-    return decimal;
-  }
 
-  function textIsValid(text: string) {
+    if (!textIsValid(inputValue)) {
+      setErrorMessage('Only 0 or 1 allowed!');
+      return false;
+    }
+
+    return true;
+  };
+
+  const bin2Dec = (bin: string) => {
+    const reverseInput = bin.split('').map(Number).reverse();
+
+    const decimal = reverseInput.reduce((total, number, index) => {
+      return total + number * Math.pow(2, index);
+    });
+
+    return decimal;
+  };
+
+  const textIsValid = (text: string) => {
     const validateStr = new RegExp(/^[0-1]+$/);
     return validateStr.test(text);
-  }
+  };
 
-  function binaryIsEmpty() {
-    return binaryText.length === 0;
-  }
+  const binaryIsEmpty = () => binaryText.length === 0;
 
-  function showError() {
-    console.log(errorMessage);
-    return errorMessage.length > 0;
-  }
+  const showError = () => errorMessage.length > 0;
 
   return (
     <Container>
       <Input
-        placeholder="Digite um número binário!"
+        placeholder="Enter a binary number!"
         onChangeText={handleInputChange}
         defaultValue={binaryText}
         testID="input"
       />
-      {showError() && <ErrorText>{errorMessage}</ErrorText>}
+      {showError() && <ErrorText testID="error">{errorMessage}</ErrorText>}
       {!binaryIsEmpty() && (
         <SimpleText testID="output">{decimalText}</SimpleText>
       )}

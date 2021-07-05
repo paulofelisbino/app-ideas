@@ -11,22 +11,38 @@ it('renders correctly', () => {
   render(<Home />);
 });
 
-it('converts input text to pizza icon', () => {
+it('converts binary to decimal', () => {
   const {getByTestId} = render(<Home />);
 
   const input = getByTestId('input');
-  fireEvent.changeText(input, 'word');
+  fireEvent.changeText(input, '10');
 
   const output = getByTestId('output');
-  expect(output.props.children).toBe('🍕');
+  expect(output.props.children).toBe('2');
 });
 
-it('outputs one pizza icon per word', () => {
+it('show an error if input has anything but 0 or 1', () => {
   const {getByTestId} = render(<Home />);
 
   const input = getByTestId('input');
-  fireEvent.changeText(input, 'word1 word2 word3 b');
+  fireEvent.changeText(input, '1a');
+
+  const error = getByTestId('error');
+  expect(error.props.children).toBe('Only 0 or 1 allowed!');
 
   const output = getByTestId('output');
-  expect(output.props.children).toBe('🍕 🍕 🍕 🍕');
+  expect(output.props.children).toBe('');
+});
+
+it('does nothing if input is empty', () => {
+  const {getByTestId, queryByTestId} = render(<Home />);
+
+  const input = getByTestId('input');
+  fireEvent.changeText(input, '');
+
+  const error = queryByTestId('error');
+  expect(error).toBe(null);
+
+  const output = queryByTestId('output');
+  expect(output).toBe(null);
 });

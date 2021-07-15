@@ -1,71 +1,160 @@
 import React, {useState} from 'react';
-import {Container} from '@/common.styles';
-import {Input, SimpleText, ErrorText} from './styles';
+import {View, Button} from 'react-native';
+import {useForm, Controller} from 'react-hook-form';
+import CheckBox from '@react-native-community/checkbox';
+import MyShape from './components/MyShape';
 
-const Bin2Dec = (): JSX.Element => {
-  const [binaryText, setBinaryText] = useState<string>('');
-  const [decimalText, setDecimalText] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>('');
+import {
+  Container,
+  FormView,
+  Input,
+  ErrorText,
+  SimpleText,
+  CheckBoxWrapper,
+  ShapeWrapper,
+} from './styles';
 
-  const handleInputChange = (input: string) => {
-    setBinaryText(input);
-    setErrorMessage('');
-    setDecimalText('');
+const BorderRadiusPreviewer = (): JSX.Element => {
+  const [borderRadius, setBorderRadius] = useState<string>('0px');
 
-    if (!inputIsValid(input)) {
+  const {
+    control,
+    handleSubmit,
+    formState: {errors},
+    watch,
+    setError,
+  } = useForm({mode: 'onChange'});
+
+  const watchIndividualValues = watch('individualValues', false);
+
+  const borderRadiusUnitValid = (radius: string) => {
+    const allowedUnits = ['px'];
+    let unitValid = false;
+    allowedUnits.forEach(unit => {
+      if (radius.includes(unit)) {
+        unitValid = true;
+        return;
+      }
+    });
+    return unitValid;
+  };
+
+  const borderRadiusValid = (radius: string[]) => {
+    let valid = true;
+    radius.forEach((singleRadius: string) => {
+      const unitValid = borderRadiusUnitValid(singleRadius);
+      if (!unitValid) {
+        valid = false;
+        return;
+      }
+    });
+    return valid;
+  };
+
+  const validateBorderRadius = (completeBorderRadius: string) => {
+    let validation = {
+      valid: true,
+      errorMessage: '',
+    };
+
+    const isolatedRadius = completeBorderRadius.split(' ');
+    if (isolatedRadius.length > 4) {
+      validation = {
+        valid: false,
+        errorMessage: 'Provide up to 4 border values.',
+      };
+    } else {
+      const radiusValuesValid = borderRadiusValid(isolatedRadius);
+      if (!radiusValuesValid) {
+        validation = {
+          valid: false,
+          errorMessage: 'Invalid unit: only px allowed.',
+        };
+      }
+    }
+
+    return validation;
+  };
+
+  const onSubmit = (data: any) => {
+    const radius = data.borderRadius;
+    const radiusValid = validateBorderRadius(radius);
+
+    if (!radiusValid.valid) {
+      setError('borderRadius', {
+        type: 'manual',
+        message: radiusValid.errorMessage,
+      });
+      setBorderRadius('0px');
       return;
     }
 
-    const decimal = bin2Dec(input);
-    setDecimalText(decimal.toString());
+    setBorderRadius(radius);
   };
-
-  const inputIsValid = (inputValue: string) => {
-    if (inputValue.length === 0) {
-      return false;
-    }
-
-    if (!textIsValid(inputValue)) {
-      setErrorMessage('Only 0 or 1 allowed!');
-      return false;
-    }
-
-    return true;
-  };
-
-  const bin2Dec = (bin: string) => {
-    const reverseInput = bin.split('').map(Number).reverse();
-
-    const decimal = reverseInput.reduce((total, number, index) => {
-      return total + number * Math.pow(2, index);
-    });
-
-    return decimal;
-  };
-
-  const textIsValid = (text: string) => {
-    const validateStr = new RegExp(/^[0-1]+$/);
-    return validateStr.test(text);
-  };
-
-  const binaryIsEmpty = () => binaryText.length === 0;
-
-  const showError = () => errorMessage.length > 0;
 
   return (
     <Container>
-      <Input
-        placeholder="ohfusodhghssdhgg"
-        onChangeText={handleInputChange}
-        defaultValue={binaryText}
-        testID="input"
-      />
-      {showError() && <ErrorText testID="error">{errorMessage}</ErrorText>}
-      {!binaryIsEmpty() && (
-        <SimpleText testID="output">{decimalText}</SimpleText>
-      )}
+      <FormView>
+        <Controller
+          control={control}
+          rules={{}}
+          render={({field: {onChange, onBlur, value}}) => (
+            <Input onBlur={onBlur} onChangeText={onChange} value={value} />
+          )}
+          name="borderRadius"
+          defaultValue=""
+        />
+        {errors.borderRadius ? (
+          <ErrorText>{errors.borderRadius.message}</ErrorText>
+        ) : null}
+
+        <Controller
+          control={control}
+          rules={{required: false}}
+          render={({field: {onChange, value}}) => (
+            <CheckBoxWrapper>
+              <CheckBox
+                disabled={false}
+                value={value}
+                onValueChange={onChange}
+              />
+              <SimpleText>Set individual values</SimpleText>
+            </CheckBoxWrapper>
+          )}
+          name="individualValues"
+          defaultValue=""
+        />
+
+        {watchIndividualValues ? (
+          <View>
+            <Controller
+              control={control}
+              rules={{
+                pattern: {
+                  value: new RegExp('^[0-9]+$'),
+                  message: 'Only numbers allowed!',
+                },
+              }}
+              render={({field: {onChange, onBlur, value}}) => (
+                <Input onBlur={onBlur} onChangeText={onChange} value={value} />
+              )}
+              name="lastName"
+              defaultValue=""
+            />
+            {errors.lastName ? (
+              <ErrorText>{errors.lastName.message}</ErrorText>
+            ) : null}
+          </View>
+        ) : null}
+
+        <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+      </FormView>
+
+      <ShapeWrapper>
+        <MyShape borderRadius={borderRadius} />
+      </ShapeWrapper>
     </Container>
   );
 };
 
-export default Bin2Dec;
+export default BorderRadiusPreviewer;

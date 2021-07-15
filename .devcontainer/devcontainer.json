@@ -27,7 +27,8 @@
 	"extensions": [
 		"msjsdiag.vscode-react-native",
 		"dbaeumer.vscode-eslint",
-		"jpoissonnier.vscode-styled-components"
+		"jpoissonnier.vscode-styled-components",
+		"esbenp.prettier-vscode"
 	]
   }
   

@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
-import {Container} from '@/common.styles';
-import {Input, SimpleText, ErrorText} from './styles';
+import {Container, Input, SimpleText, ErrorText} from './styles';
 
 const Bin2Dec = (): JSX.Element => {
   const [binaryText, setBinaryText] = useState<string>('');

@@ -1,5 +1,5 @@
 import React from 'react';
-import {ViewProps, View} from 'react-native';
+
 import {Canvas} from './styles';
 
 interface Props {

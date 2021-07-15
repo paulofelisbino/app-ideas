@@ -1,17 +1,18 @@
 import React, {useState} from 'react';
-import {View, Button} from 'react-native';
-import {useForm, Controller} from 'react-hook-form';
-import CheckBox from '@react-native-community/checkbox';
-import MyShape from './components/MyShape';
+import {Controller, useForm} from 'react-hook-form';
+import {Button, View} from 'react-native';
 
+import CheckBox from '@react-native-community/checkbox';
+
+import MyShape from './components/MyShape';
 import {
+  CheckBoxWrapper,
   Container,
+  ErrorText,
   FormView,
   Input,
-  ErrorText,
-  SimpleText,
-  CheckBoxWrapper,
   ShapeWrapper,
+  SimpleText,
 } from './styles';
 
 const BorderRadiusPreviewer = (): JSX.Element => {
